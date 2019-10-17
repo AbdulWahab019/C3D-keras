@@ -52,7 +52,7 @@ def save_history(history, result_dir):
 
 def process_batch(lines, img_path, train=True):
     num = len(lines)
-    batch = np.zeros((num, 16, 240, 240, 3), dtype='float32')
+    batch = np.zeros((num, 16, 112, 112, 3), dtype='float32')
     labels = np.zeros(num, dtype='int')
     for i in range(num):
         path = lines[i].split(' ')[0]
@@ -71,7 +71,7 @@ def process_batch(lines, img_path, train=True):
                 img = imgs[symbol + j]
                 image = cv2.imread(img_path + path + '/' + img)
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                image = cv2.resize(image, (240, 240))
+                image = cv2.resize(image, (112, 112))
                 if is_flip == 1:
                     image = cv2.flip(image, 1)
 
@@ -82,7 +82,7 @@ def process_batch(lines, img_path, train=True):
                 img = imgs[symbol + j]
                 image = cv2.imread(img_path + path + '/' + img)
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                image = cv2.resize(image, (240, 240))
+                image = cv2.resize(image, (112, 112))
                 batch[i][j][:][:][:] = image[8:120, 30:142, :]
             labels[i] = label
     return batch, labels

@@ -4,7 +4,7 @@ from keras.models import Model
 
 
 def c3d_model():
-    input_shape = (240, 240, 16, 3)
+    input_shape = (112, 112, 16, 3)
     weight_decay = 0.005
     nb_classes = 2
 
