@@ -1,7 +1,7 @@
-# c3d-keras
+# C3D-Keras
 train c3d with keras
 
-## requirements
+## Requirements
 
 opencv-3.2
 
