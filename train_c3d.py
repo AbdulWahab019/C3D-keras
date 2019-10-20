@@ -23,7 +23,7 @@ def plot_history(history, result_dir):
     plt.legend(['acc', 'val_acc'], loc='lower right')
     plt.savefig(os.path.join(result_dir, 'model_accuracy.png'))
     plt.close()
-
+    
     plt.plot(history.history['loss'], marker='.')
     plt.plot(history.history['val_loss'], marker='.')
     plt.title('model loss')
@@ -58,9 +58,10 @@ def process_batch(lines, img_path, train=True):
         path = lines[i].split(' ')[0]
         label = lines[i].split(' ')[-1]
         symbol = lines[i].split(' ')[1]
+
         label = label.strip('\n')
         label = int(label)
-        symbol = int(symbol, 10) - 1
+        symbol = int(symbol) - 1
         imgs = os.listdir(img_path + path)
         imgs.sort(key=str.lower)
         if train:
@@ -68,22 +69,22 @@ def process_batch(lines, img_path, train=True):
             crop_y = random.randint(0, 58)
             is_flip = random.randint(0, 1)
             for j in range(16):
-                img = imgs[symbol + j]
+                img = imgs[j]
                 image = cv2.imread(img_path + path + '/' + img)
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                 image = cv2.resize(image, (112, 112))
                 if is_flip == 1:
                     image = cv2.flip(image, 1)
 
-                batch[i][j][:][:][:] = image[: + 240, : + 240, :]
+                batch[i][j][:][:][:] = image[: + 112, : + 112, :]
             labels[i] = label
         else:
             for j in range(16):
-                img = imgs[symbol + j]
+                img = imgs[j]
                 image = cv2.imread(img_path + path + '/' + img)
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                 image = cv2.resize(image, (112, 112))
-                batch[i][j][:][:][:] = image[8:120, 30:142, :]
+                batch[i][j][:][:][:] = image[: + 112, : + 112, :]
             labels[i] = label
     return batch, labels
 
@@ -142,9 +143,9 @@ def generator_val_batch(val_txt, batch_size, num_classes, img_path):
 
 
 def main():
-    img_path = 'C:/Users/wahab/Desktop/FYP/data/'
-    train_file = 'train_list1.txt'
-    test_file = 'test_list1.txt'
+    img_path = 'Short Data/'
+    train_file = 'train_list2.txt'
+    test_file = 'test_list2.txt'
     f1 = open(train_file, 'r')
     f2 = open(test_file, 'r')
     lines = f1.readlines()
@@ -155,7 +156,7 @@ def main():
     val_samples = len(lines)
 
     num_classes = 2
-    batch_size = 16
+    batch_size = 8
     epochs = 16
 
     model = c3d_model()
@@ -168,10 +169,10 @@ def main():
     history = model.fit_generator(generator_train_batch(train_file, batch_size, num_classes, img_path),
                         steps_per_epoch=train_samples // batch_size,
                         epochs=epochs,
-                        verbose=1,
                         callbacks=[onetenth_4_8_12(lr)],
                         validation_data=generator_val_batch(test_file, batch_size, num_classes, img_path),
-                        validation_steps=val_samples // batch_size)
+                        validation_steps=val_samples // batch_size,
+                        verbose=1)
 
     if not os.path.exists('results/'):
         os.mkdir('results/')
